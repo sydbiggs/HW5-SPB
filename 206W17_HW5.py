@@ -2,6 +2,7 @@ import unittest
 import tweepy
 import requests
 import json
+import twitter_info
 
 ## SI 206 - W17 - HW5
 ## COMMENT WITH:
@@ -10,7 +11,9 @@ import json
 
 ######## 500 points total ########
 
-## Write code that uses the tweepy library to search for tweets with a phrase of the user's choice (should use the Python input function), and prints out the Tweet text and the created_at value (note that this will be in GMT time) of the first THREE tweets with at least 1 blank line in between each of them, e.g.
+## Write code that uses the tweepy library to search for tweets with a phrase of the user's choice 
+#(should use the Python input function), and prints out the Tweet text and the created_at value (note that this will be in GMT time) 
+#of the first THREE tweets with at least 1 blank line in between each of them, e.g.
 
 ## TEXT: I'm an awesome Python programmer.
 ## CREATED AT: Sat Feb 11 04:28:19 +0000 2017
@@ -37,10 +40,10 @@ import json
 ## Get your secret values to authenticate to Twitter. You may replace each of these with variables rather than filling in the empty strings if you choose to do the secure way for 50 EC points
 # https://apps.twitter.com/app/13422883/keys
 
-consumer_key = "RXzonZcgnSyCaLY1mdg7MS1ni" 
-consumer_secret = "7boqeU0is0VvLoUHatkMiCv1DvkuErUHOHCvd2mZCk4I8wQbOX"
-access_token = "1953225996-5tYlCzvxP7hceuH9g2L8iLqF9jJu9CEb0BOETTU"
-access_token_secret = "ien6rmb4MkNgwr8PpohLWcj6bcrVz0UDEJiGbN2pR4jlK"
+consumer_key = twitter_info.consumer_key
+consumer_secret = twitter_info.consumer_secret
+access_token = twitter_info.access_token
+access_token_secret = twitter_info.access_token_secret
 ## Set up your authentication to Twitter
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -54,21 +57,125 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser()) # Set up library to g
 ## 3. Invoke your function, save the return value in a variable, and explore the data you got back!
 ## 4. With what you learn from the data -- e.g. how exactly to find the text of each tweet in the big nested structure -- write code to print out content from 3 tweets, as shown above.
 
-
-CACHE_FNAME = "cache_file.json" # text represents data you got when you made request; you can store dictionary as string formatted in JSON way
+CACHE_FNAME = "HW5_cache.json" # text represents data you got when you made request; you can store dictionary as string formatted in JSON way
 try: 
 	cache_file_obj = open(CACHE_FNAME, 'r')
 	cache_contenst = cache_file_obj.read() # pull all into one big string
 	CACHE_DICTION = json.loads(cache_contents) # dictionary that holds all cache data  
 except:
 	CACHE_DICTION = {}
-	# I know in my code, inside a function that gets data from the internet, I will have to make sure
-	# that I properly add data to CACHE_DICTION
-	# I will have to make sure that I properly write CACHE_DICTION to a file so that I have it next time I run my program
-	# what are the parameters, have I gotten this data before, etc.
+
+def get_tweets(value):
+	unique_identifier = "twitter_{}".format(value)
+	if unique_identifier in CACHE_DICTION:
+		print("using cached data for ", value)
+		twitter_results = CACHED_DICTION[unique_identifier] #get that data!
+	else:
+		print("getting data from internet for", value)
+		twitter_results = api.search(q = value)
+		CACHE_DICTION[unique_identifier] = twitter_results #add it to the dictionary
+		f = open(CACHE_FNAME, "w")
+		f.write(json.dumps(CACHE_DICTION)) #make the whole dictionary holding data
+		f.close()
+	#no matter what you have, run the for loop to get everything!
+	text_list = []
+	for i in range(len(twitter_results)):
+		tweet_text = twitter_results["statuses"][i]["text"]
+		tweet_time = twitter_results["statuses"][i]["created_at"]
+		temp_tup = (tweet_text, tweet_time)
+		text_list.append(temp_tup)
+	print(text_list)
+	print("That was text_list")
+	for i in range(len(text_list)):
+		print("TEXT: ", text_list[i][0])
+		print("CREATED AT: ", text_list[i][1])
+		print("\n")
+
+	return(text_list)
+
+print(get_tweets("adele"))
+
+# 	text_dict = {}
+# 	for i in range(len(twitter_results)):
+# 		tweet_text = twitter_results["text"][i]
+# 		tweet_time = twitter_result["created at"][i]
+# 		text_dict[tweet_text] = tweet_time
+# 	return(text_dict)
+
+# print(get_tweets("university of michigan"))
 
 
 
+
+
+
+
+
+
+# CACHE_FNAME = "HW5_cache.json"
+# try:
+# 	cache_file_obj = open(CACHE_FNAME,'r')
+# 	cache_contents = cache_file_obj.read()
+# 	CACHE_DICTION = json.loads(cache_contents) #all the data you cache available
+# except:
+# 	CACHE_DICTION = {} 
+
+# def canonical_order(d):
+#     alphabetized_keys = sorted(d.keys())
+#     res = []
+#     for k in alphabetized_keys:
+#         res.append((k, d[k]))
+#     return res
+    
+# def requestURL(baseurl, params = {}):
+#     req = requests.Request(method = 'GET', url = baseurl, params = canonical_order(params))
+#     prepped = req.prepare()
+#     return prepped.url
+
+# def twitter_caching(value):
+# 	baseurl = 
+# 	results = api.search(q = value)
+# 	print(results)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# CACHE_FNAME = "cache_file.json" # text represents data you got when you made request; you can store dictionary as string formatted in JSON way
+# try: 
+# 	cache_file_obj = open(CACHE_FNAME, 'r')
+# 	cache_contenst = cache_file_obj.read() # pull all into one big string
+# 	CACHE_DICTION = json.loads(cache_contents) # dictionary that holds all cache data  
+# except:
+# 	CACHE_DICTION = {}
+# 	# I know in my code, inside a function that gets data from the internet, I will have to make sure
+# 	# that I properly add data to CACHE_DICTION
+# 	# I will have to make sure that I properly write CACHE_DICTION to a file so that I have it next time I run my program
+# 	# what are the parameters, have I gotten this data before, etc.
 
 
 
