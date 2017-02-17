@@ -59,9 +59,9 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser()) # Set up library to g
 
 CACHE_FNAME = "HW5_cache.json" # text represents data you got when you made request; you can store dictionary as string formatted in JSON way
 try: 
-	cache_file_obj = open(CACHE_FNAME, 'r')
-	cache_contenst = cache_file_obj.read() # pull all into one big string
-	CACHE_DICTION = json.loads(cache_contents) # dictionary that holds all cache data  
+	cache_file = open(CACHE_FNAME, 'r')
+	cache_contenst = cache_file.read() # pull all into one big string
+	CACHE_DICTION = json.loads(cache_contenst) # dictionary that holds all cache data  
 except:
 	CACHE_DICTION = {}
 
@@ -69,7 +69,7 @@ def get_tweets(value):
 	unique_identifier = "twitter_{}".format(value)
 	if unique_identifier in CACHE_DICTION:
 		print("using cached data for ", value)
-		twitter_results = CACHED_DICTION[unique_identifier] #get that data!
+		twitter_results = CACHE_DICTION[unique_identifier] #get that data!
 	else:
 		print("getting data from internet for", value)
 		twitter_results = api.search(q = value)
@@ -79,21 +79,57 @@ def get_tweets(value):
 		f.close()
 	#no matter what you have, run the for loop to get everything!
 	text_list = []
-	for i in range(len(twitter_results)):
+	for i in range(len(twitter_results["statuses"])):
 		tweet_text = twitter_results["statuses"][i]["text"]
 		tweet_time = twitter_results["statuses"][i]["created_at"]
 		temp_tup = (tweet_text, tweet_time)
 		text_list.append(temp_tup)
-	print(text_list)
-	print("That was text_list")
-	for i in range(len(text_list)):
+	# for i in range(len(text_list)):
+	for i in range(3):
 		print("TEXT: ", text_list[i][0])
 		print("CREATED AT: ", text_list[i][1])
 		print("\n")
-
-	return(text_list)
+	return(text_list[:3])
 
 print(get_tweets("adele"))
+
+
+
+
+# # start out cache
+# CACHE_FNAME = "cached_data_socialmedia.json"
+# try:
+# 	cache_file = open(CACHE_FNAME,'r')
+# 	cache_contents = cache_file.read()
+# 	CACHE_DICTION = json.loads(cache_contents)
+# except:
+# 	CACHE_DICTION = {}
+
+# # Then you've got to do stuff in the function!
+# def get_tweets_from_user(username):
+	
+# 	unique_identifier = "twitter_{}".format(username) # seestring formatting chapter
+# 	# see if that username+twitter is in the cache diction!
+# 	if unique_identifier in CACHE_DICTION: # if it is...
+# 		print('using cached data for', username)
+# 		twitter_results = CACHE_DICTION[unique_identifier] # grab the data from the cache!
+# 	else:
+# 		print('getting data from internet for', username)
+# 		twitter_results = api.user_timeline(username) # get it from the internet
+# 		# but also, save in the dictionary to cache it!
+# 		CACHE_DICTION[unique_identifier] = twitter_results # add it to the dictionary -- new key-val pair
+# 		# and then write the whole cache dictionary, now with new info added, to the file, so it'll be there even after your program closes!
+# 		f = open(CACHE_FNAME,'w') # open the cache file for writing
+# 		f.write(json.dumps(CACHE_DICTION)) # make the whole dictionary holding data and unique identifiers into a json-formatted string, and write that wholllle string to a file so you'll have it next time!
+# 		f.close()
+
+# 	# now no matter what, you have what you need in the twitter_results variable still, go back to what we were doing!
+# 	tweet_texts = [] # collect 'em all!
+# 	for tweet in twitter_results:
+# 		tweet_texts.append(tweet["text"])
+# 	return tweet_texts[:3]
+
+
 
 # 	text_dict = {}
 # 	for i in range(len(twitter_results)):
