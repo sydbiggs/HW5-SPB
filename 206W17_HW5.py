@@ -68,10 +68,10 @@ except:
 def get_tweets(value):
 	unique_identifier = "twitter_{}".format(value)
 	if unique_identifier in CACHE_DICTION:
-		print("using cached data for ", value)
+		print("using cached data for ", value, "\n")
 		twitter_results = CACHE_DICTION[unique_identifier] #get that data!
 	else:
-		print("getting data from internet for", value)
+		print("getting data from internet for", value, "\n")
 		twitter_results = api.search(q = value)
 		CACHE_DICTION[unique_identifier] = twitter_results #add it to the dictionary
 		f = open(CACHE_FNAME, "w")
@@ -84,14 +84,15 @@ def get_tweets(value):
 		tweet_time = twitter_results["statuses"][i]["created_at"]
 		temp_tup = (tweet_text, tweet_time)
 		text_list.append(temp_tup)
-	# for i in range(len(text_list)):
-	for i in range(3):
-		print("TEXT: ", text_list[i][0])
-		print("CREATED AT: ", text_list[i][1])
-		print("\n")
 	return(text_list[:3])
+	# for i in range(len(text_list)):
 
-print(get_tweets("adele"))
+mytweets = (get_tweets("adele"))
+
+for avalue in mytweets:
+	print("TEXT: ", avalue[0])
+	print("CREATED AT: ", avalue[1])
+	print("\n")
 
 
 
