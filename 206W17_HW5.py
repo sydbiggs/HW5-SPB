@@ -87,7 +87,11 @@ def get_tweets(value):
 	return(text_list[:3])
 	# for i in range(len(text_list)):
 
-mytweets = (get_tweets("beyonce"))
+try:
+	search_term = input("Please input a keyword to search for: ")
+except:
+	print("Sorry that didn't work- please try again!")
+mytweets = (get_tweets(search_term))
 
 for avalue in mytweets:
 	print("TEXT: ", avalue[0])
